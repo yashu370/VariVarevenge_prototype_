@@ -1,7 +1,8 @@
 ﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.6
 # include "Bullet.h"
 # include "BulletManager.h"
-# include "Player.h"
+
+# include "CameraControl.h"
 
 void Main()
 {
@@ -9,9 +10,7 @@ void Main()
 	size_t playerIndex = 0;
 	//camera
 
-	const Vec2 Center = { 300,400 };
-	const double ScaleMinLength = 300.0;
-	Camera2D camera{ Center,1.0 };
+	Camera2D camera{ Vec2{300,400},1.0};
 
 	Bullet a = Bullet{ Circle{20,20,10},Vec2{100,300} };
 	Bullet b = Bullet{ Circle{10,10,3},Vec2{300,100} };
@@ -54,16 +53,7 @@ void Main()
 		}
 		Good.update(Scene::DeltaTime());
 
-
-		double ZoomValue = 1.0;
-
-		if (ScaleMinLength > player.getPos().distanceFrom(Center)) {
-			ZoomValue = 1.0;
-
-		}
-		else {
-			ZoomValue = ScaleMinLength / player.getPos().distanceFrom(Center);
-		}
+		cameraControl(camera,player);
 
 
 		camera.update();
@@ -74,8 +64,6 @@ void Main()
 			Good.draw();
 		}
 		
-		camera.setTargetCenter(Vec2((player.getPos().x + Center.x) / 2, (player.getPos().y + Center.y) / 2));
-		camera.setTargetScale(ZoomValue);
 		
 		
 		
