@@ -1,15 +1,30 @@
 ﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.6
 # include "Bullet.h"
-
+# include "BulletManager.h"
 
 void Main()
 {
 	
-	Bullet a = Bullet{ Circle{10,10,3},Vec2{100,300} };
+	Bullet a = Bullet{ Circle{20,20,10},Vec2{100,300} };
+	Bullet b = Bullet{ Circle{10,10,3},Vec2{300,100} };
+	Bullet c = Bullet{ Circle{10,10,30},Vec2{300,300} };
+	BulletManager Good;
+	Good.AddBullet(c);
+	Good.AddBullet(a);
+	Good.AddBullet(b);
+	Good.AddBullet(a);
+	Good.AddBullet(a);
 	while (System::Update())
 	{
-		a.update(Scene::DeltaTime());
-		a.draw();
+
+		Good.AddBullet(a);
+		Array<Bullet> hitBulletList;
+		if (Good.intersectCheck(Circle{ Cursor::Pos(),100 }, hitBulletList)) {
+			Good.deleteBullet(hitBulletList);
+		}
+		Good.update(Scene::DeltaTime());
+		Good.draw();
+		Circle{ Cursor::Pos(),100 }.draw();
 	}
 }
 
