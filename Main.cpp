@@ -1,7 +1,7 @@
 ﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.6
 # include "Bullet.h"
 # include "BulletManager.h"
-
+# include "EnemyManager.h"
 # include "CameraControl.h"
 
 void Main()
@@ -18,6 +18,8 @@ void Main()
 	Good.AddBullet(a);
 	Good.AddBullet(b);
 
+	EnemyManager enemyControle(&Good);
+
 	Player player;
 
 	while (System::Update())
@@ -25,35 +27,36 @@ void Main()
 		ClearPrint();
 
 		//入力管理
-		double inputX = 0;
-		double inputY = 0;
+		Vec2 inputDir;
 		Input inputA;
 
 		if (const auto gamepad = Gamepad(playerIndex)) {
-			inputX = gamepad.axes[0];
-			inputY = gamepad.axes[1];
+			inputDir.x = gamepad.axes[0];
+			inputDir.y = gamepad.axes[1];
 			inputA = gamepad.buttons[2];
 		}
 		//微細な入力は無視
-		if (abs(inputX) < 0.1) { inputX = 0; }
-		if (abs(inputY) < 0.1) { inputY = 0; }
+		if (abs(inputDir.x) < 0.1) { inputDir.x = 0; }
+		if (abs(inputDir.y) < 0.1) { inputDir.y = 0; }
 		//絶対値が1以下になるようにする
-		double InputAbs = pow(inputX, 2) + pow(inputY, 2);
-		if ( InputAbs> 1) {
-			inputX /= sqrt(InputAbs);
-			inputY /= sqrt(InputAbs);
+		if (inputDir.length() > 1) {
+			inputDir.normalize();
 		}
 
-		//キャラの移動
-		player.move(15 * Vec2{ inputX, inputY });
+
+		//キャラの移動]
 
 		Array<Bullet> hitBulletList;
 		if (Good.intersectCheck(player.getCollision(), hitBulletList)) {
+			//衝突時に行われる処理
 			Good.deleteBullet(hitBulletList);
 		}
-		Good.update(Scene::DeltaTime());
 
-		cameraControl(camera,player);
+		player.update(Scene::DeltaTime(),inputDir);
+		enemyControle.update(Scene::DeltaTime());
+
+
+		cameraControl(camera, player.getPos(), enemyControle.getEnemyPos());
 
 
 		camera.update();
@@ -61,7 +64,7 @@ void Main()
 			const auto t = camera.createTransformer();
 
 			player.draw();
-			Good.draw();
+			enemyControle.draw();
 		}
 		
 		

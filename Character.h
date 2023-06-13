@@ -31,7 +31,7 @@ public:
 	//指定した値だけ移動
 	virtual void move(Vec2);
 
-	virtual void update();
+	virtual void update(double deltatime);
 
 	//描画
 	virtual void draw() const;

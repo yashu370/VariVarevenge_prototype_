@@ -117,6 +117,7 @@
     <ClCompile Include="BulletManager.cpp" />
     <ClCompile Include="CameraControl.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="stdafx.cpp">

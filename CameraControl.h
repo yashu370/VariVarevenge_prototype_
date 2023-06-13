@@ -3,4 +3,4 @@
 # include <Siv3D.hpp>
 # include "Player.h"
 
-extern void cameraControl(Camera2D& camera, const Player player);
+void cameraControl(Camera2D& camera, const Vec2 playerPos,const Vec2 EnemyPos);

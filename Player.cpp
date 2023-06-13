@@ -10,6 +10,15 @@ void Player::movingSet(Vec2& move) {
 }
 
 
+bool Player::playerCanMove() {
+	//未実装
+	return true;
+}
+
+
+State Player::getState() const { return nowState; }
+void Player::setState(State a) { nowState = a; }
+
 
 Circle Player::getCollision() { return Circle{ getPos(),getRad() }; }
 
@@ -18,8 +27,30 @@ void Player::move(Vec2 value) {
 	setPos(getPos()+value);
 }
 
-void Player::update() {
+void Player::update(double deltatime,Vec2 MoveDir) {
+	//前の状態の記録
+	postState = nowState;
 
+	//プレイヤー移動処理
+	const double speed = 15;
+	if (playerCanMove()) {
+		move(MoveDir * speed);
+	}
+
+
+	switch (nowState)
+	{
+	case State::Default:
+		break;
+	case State::Dash:
+		break;
+	case State::Invincible:
+		break;
+	case State::injured:
+		break;
+	default:
+		break;
+	}
 }
 
 void Player::draw() const {

@@ -13,7 +13,7 @@ void Character::move(Vec2 value) {
 	Pos += value;
 }
 
-void Character::update() {
+void Character::update(double deltatime) {
 
 }
 
