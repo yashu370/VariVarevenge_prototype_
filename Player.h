@@ -6,9 +6,10 @@
 enum class State
 {
 	Default,
-	Dash,
+	DashNow,
 	Invincible,
-	injured
+	Injured,
+	Guard
 };
 
 class Player: public Character{
@@ -21,16 +22,23 @@ private:
 	State nowState;
 	State postState;
 
-	Stopwatch a;
+	Stopwatch StaminaTimer;
 
+	Stopwatch DefaultCooldownTimer;
+
+	Stopwatch GuardIntervalTimer;
 
 	void movingSet(Vec2&);
 	void move(Vec2) override;
+
+
+
+
 public:
 	Player();
 
-	bool playerCanMove();
-
+	bool CanMove();
+	bool DashAble();
 
 	State getState() const;
 	void setState(State);
@@ -39,10 +47,11 @@ public:
 	void setStamina(int);
 
 	Circle getCollision();
+	Quad getMoveCollision();
 
 	//指定した値だけ移動
 
-	void update(double deltatime,Vec2 MoveDir);
+	void update(double deltatime,Vec2 MoveDir,bool DashButtonPressed,bool GuardButtonpress);
 
 	//描画
 	void draw() const override;

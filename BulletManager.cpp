@@ -19,7 +19,7 @@ const void BulletManager::draw() {
 	}
 }
 
-bool BulletManager::intersectCheck(Circle my,Array<Bullet>& hitBullet) {
+bool BulletManager::intersectCircleCheck(Circle my, Array<Bullet>& hitBullet) {
 	bool flag = false;
 	for (const auto& it : Bullets) {
 		//当たったときはhitbulletに当たったものを格納する
@@ -27,7 +27,21 @@ bool BulletManager::intersectCheck(Circle my,Array<Bullet>& hitBullet) {
 			hitBullet << it;
 			flag = true;
 		}
-		
+
+	}
+	//当たらなかったとき
+	return flag;
+}
+
+bool BulletManager::intersectQuadCheck(Quad my, Array<Bullet>& hitBullet) {
+	bool flag = false;
+	for (const auto& it : Bullets) {
+		//当たったときはhitbulletに当たったものを格納する
+		if (it.intersects(my)) {
+			hitBullet << it;
+			flag = true;
+		}
+
 	}
 	//当たらなかったとき
 	return flag;

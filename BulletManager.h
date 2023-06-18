@@ -14,7 +14,8 @@ public:
 	const void draw();
 
 	//Circleに当たったかチェック&当たった弾のIDを格納
-	bool intersectCheck(Circle,Array<Bullet>& hitBullet);
+	bool intersectCircleCheck(Circle,Array<Bullet>& hitBullet);
+	bool intersectQuadCheck(Quad, Array<Bullet>& hitBullet);
 
 	void deleteBullet(Array<Bullet>&);
 	//指定したIDの弾を削除する。

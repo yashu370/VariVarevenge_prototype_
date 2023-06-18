@@ -1,4 +1,5 @@
 ﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.6
+
 # include "Bullet.h"
 # include "BulletManager.h"
 # include "EnemyManager.h"
@@ -29,11 +30,13 @@ void Main()
 		//入力管理
 		Vec2 inputDir;
 		Input inputA;
+		Input inputR;
 
 		if (const auto gamepad = Gamepad(playerIndex)) {
 			inputDir.x = gamepad.axes[0];
 			inputDir.y = gamepad.axes[1];
 			inputA = gamepad.buttons[2];
+			inputR = gamepad.buttons[4];
 		}
 		//微細な入力は無視
 		if (abs(inputDir.x) < 0.1) { inputDir.x = 0; }
@@ -43,16 +46,16 @@ void Main()
 			inputDir.normalize();
 		}
 
-
 		//キャラの移動]
 
 		Array<Bullet> hitBulletList;
-		if (Good.intersectCheck(player.getCollision(), hitBulletList)) {
+		if (Good.intersectCircleCheck(player.getCollision(), hitBulletList)) {
 			//衝突時に行われる処理
 			Good.deleteBullet(hitBulletList);
 		}
 
-		player.update(Scene::DeltaTime(),inputDir);
+
+		player.update(Scene::DeltaTime(), inputDir, inputA.down(), inputR.pressed());
 		enemyControle.update(Scene::DeltaTime());
 
 
@@ -62,7 +65,7 @@ void Main()
 		camera.update();
 		{
 			const auto t = camera.createTransformer();
-
+			BackgroundDraw();
 			player.draw();
 			enemyControle.draw();
 		}

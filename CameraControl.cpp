@@ -22,3 +22,13 @@ void cameraControl(Camera2D& camera,const Vec2 playerPos,const Vec2 EnemyPos) {
 	camera.setTargetScale(ZoomValue);
 
 }
+
+void BackgroundDraw() {
+	const int32 Framenum = 50;
+	const int32 RectSize = 200;
+	for (int32 i = -Framenum; i < Framenum; i++) {
+		Line{ -Framenum * RectSize,i * RectSize,Framenum * RectSize,i * RectSize }.draw(3, ColorF(1, 0.3));
+		Line{ i * RectSize,-Framenum * RectSize,i * RectSize,Framenum * RectSize }.draw(3, ColorF(1, 0.3));
+	}
+
+}
