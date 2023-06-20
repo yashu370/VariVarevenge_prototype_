@@ -1,7 +1,8 @@
 ﻿# include "Player.h"
 
 Player::Player() {
-	setPos(Scene::Center());
+	setPos(Vec2(800,800));
+	setRad(150);
 	Stamina = 1;
 	nowState = State::Default;
 }
@@ -53,10 +54,10 @@ void Player::update(double deltatime,Vec2 MoveDir, bool DashButtonPressed,bool G
 	postState = nowState;
 
 	//プレイヤー移動処理
-	const double speed = 15;
-	const double dashspeed = 230;
+	const double speed = 40;
+	const double dashspeed = 1000;
 	//スタミナ回復時間
-	const int StaminaRecoverTime = 1000;//ms
+	const int StaminaRecoverTime = 600;//ms
 	//被弾時無敵時間
 	const int InjuredInvicibleTime = 1000;
 	const int SuccessGurdInvincibleTime = 300;
@@ -147,7 +148,14 @@ void Player::draw() const {
 	switch (nowState)
 	{
 	case State::Default:
-		Circle{ getPos(),getRad() }.draw();
+		if (getStamina() == 0) {
+			Circle{ getPos(),getRad() }.draw(Palette::Red);
+
+		}
+		else {
+			Circle{ getPos(),getRad() }.draw(Palette::Yellow);
+
+		}
 		break;
 	case State::DashNow:
 		Circle{ getPos(),getRad() }.draw(Palette::Yellow);

@@ -1,7 +1,6 @@
 ﻿# include "Character.h"
 
 Character::Character() {
-	Pos = Scene::Center();
 }
 
 

@@ -7,6 +7,8 @@
 
 void Main()
 {
+	Window::Resize(1920, 1080);
+
 	//gamapad
 	size_t playerIndex = 0;
 	//camera
@@ -16,8 +18,6 @@ void Main()
 	Bullet a = Bullet{ Circle{20,20,10},Vec2{100,300} };
 	Bullet b = Bullet{ Circle{10,10,3},Vec2{300,100} };
 	BulletManager Good;
-	Good.AddBullet(a);
-	Good.AddBullet(b);
 
 	EnemyManager enemyControle(&Good);
 
@@ -54,9 +54,16 @@ void Main()
 			Good.deleteBullet(hitBulletList);
 		}
 
-
 		player.update(Scene::DeltaTime(), inputDir, inputA.down(), inputR.pressed());
-		enemyControle.update(Scene::DeltaTime());
+
+
+		if (Good.intersectQuadCheck(player.getMoveCollision(), hitBulletList)&&player.getState()==State::DashNow) {
+			player.setStamina(1);
+			Good.deleteBullet(hitBulletList);
+		}
+
+
+		enemyControle.update(Scene::DeltaTime(), player.getPos());
 
 
 		cameraControl(camera, player.getPos(), enemyControle.getEnemyPos());
