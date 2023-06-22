@@ -50,7 +50,6 @@ bool BulletManager::intersectQuadCheck(Quad my, Array<Bullet>& hitBullet) {
 
 void BulletManager::deleteBullet(Array<Bullet>& hitBullet) {
 	if (hitBullet.isEmpty()) { return; }
-	Print << U"呼ばれた";
 	for (auto it = Bullets.begin(); it != Bullets.end();)
 	{
 		//削除リストにあったかどうか

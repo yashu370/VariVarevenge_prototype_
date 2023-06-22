@@ -1,13 +1,14 @@
 ﻿# include <Siv3D.hpp> // OpenSiv3D v0.6.6
-
 # include "Bullet.h"
 # include "BulletManager.h"
 # include "EnemyManager.h"
 # include "CameraControl.h"
 
+
+
 void Main()
 {
-	Window::Resize(1920, 1080);
+	Window::Resize(1900, 1020);
 
 	//gamapad
 	size_t playerIndex = 0;
@@ -22,6 +23,13 @@ void Main()
 	EnemyManager enemyControle(&Good);
 
 	Player player;
+
+	Stopwatch TimeSpeedControleTimer;
+	const int JustGuardTimeLength = 1000;
+	
+
+	TimeSpeedState nowTimeSpeed = TimeSpeedState::Default;
+
 
 	while (System::Update())
 	{
@@ -46,24 +54,83 @@ void Main()
 			inputDir.normalize();
 		}
 
+		//時間停止魔法
+		double DeltaTime=Scene::DeltaTime();
+
+		switch (nowTimeSpeed)
+		{
+		case TimeSpeedState::Default:
+			break;
+		case TimeSpeedState::Stop:
+			DeltaTime = Scene::DeltaTime() / 10;
+			if (TimeSpeedControleTimer.ms() > JustGuardTimeLength) {
+				TimeSpeedControleTimer.reset();
+				nowTimeSpeed = TimeSpeedState::Default;
+			}
+			break;
+		case TimeSpeedState::Slow:
+			break;
+			DeltaTime = Scene::DeltaTime() / 3;
+		default:
+			break;
+		}
+
+
+
 		//キャラの移動]
 
-		Array<Bullet> hitBulletList;
+		player.update(DeltaTime, inputDir, inputA.down(), inputR.pressed());
+
+
+		enemyControle.update(DeltaTime, player.getPos());
+
+		//被弾処理
+		Array<Bullet> hitBulletList;//当たった球のインスタンスを入れる場所
+
+		DamagedState nowFrameDamagedState = DamagedState::NonHit;
+
+		
+		if (Good.intersectQuadCheck(player.getMoveCollision(), hitBulletList) && player.getState() == State::DashNow) {
+			//ダッシュ時に当たった弾、ダッシュ時弾処理
+			Good.deleteBullet(hitBulletList);
+			player.setStamina(1);
+			Print << U"呼ばれた";
+		}
+		else {
+			//一旦配列リセット
+			hitBulletList.clear();
+		}
+
+
 		if (Good.intersectCircleCheck(player.getCollision(), hitBulletList)) {
 			//衝突時に行われる処理
 			Good.deleteBullet(hitBulletList);
+			player.Damage(1, nowFrameDamagedState);
 		}
 
-		player.update(Scene::DeltaTime(), inputDir, inputA.down(), inputR.pressed());
-
-
-		if (Good.intersectQuadCheck(player.getMoveCollision(), hitBulletList)&&player.getState()==State::DashNow) {
-			player.setStamina(1);
-			Good.deleteBullet(hitBulletList);
+		//時間処理
+		switch (nowFrameDamagedState)
+		{
+		case DamagedState::Default:
+			break;
+		case DamagedState::nonDamaged:
+			break;
+		case DamagedState::JustGuard:
+			//ジャスガ(パリィ)を決めたとき…
+			nowTimeSpeed = TimeSpeedState::Stop;
+			TimeSpeedControleTimer.start();
+			Print << U"バーか";
+			break;
+		case DamagedState::Dead:
+			break;
+		case DamagedState::NonHit:
+			break;
+		default:
+			break;
 		}
+		
 
-
-		enemyControle.update(Scene::DeltaTime(), player.getPos());
+		Print << int(player.getState());
 
 
 		cameraControl(camera, player.getPos(), enemyControle.getEnemyPos());

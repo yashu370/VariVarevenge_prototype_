@@ -19,5 +19,5 @@ void Bullet::update(const double time) {
 }
 
 bool Bullet::equalChack(const Bullet& it) const {
-	return (it.x == this->x && it.y == this->y && it.getVelocity() == m_velocity);
+	return (it.getID()==this->getID());
 }

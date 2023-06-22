@@ -8,7 +8,7 @@ Player::Player() {
 }
 
 void Player::movingSet(Vec2& move) {
-	Rect rect{ int(getPos().x),int(getPos().y - getRad()), int(move.length()), int(2 * getRad())};
+	Rect rect{ int(getPos().x),int(getPos().y - getRad()), int(move.length()+getRad()), int(2 * getRad())};
 	moving.set(rect.rotatedAt(getPos(), move.getAngle() - 90_deg));
 }
 
@@ -49,7 +49,6 @@ void Player::update(double deltatime,Vec2 MoveDir, bool DashButtonPressed,bool G
 
 
 
-
 	//前の状態の記録
 	postState = nowState;
 
@@ -62,7 +61,6 @@ void Player::update(double deltatime,Vec2 MoveDir, bool DashButtonPressed,bool G
 	const int InjuredInvicibleTime = 1000;
 	const int SuccessGurdInvincibleTime = 300;
 	//ガードタイマー
-	const int GuardPaliyTime = 40;
 	const int GuardMinTime = 220;
 
 
@@ -75,7 +73,6 @@ void Player::update(double deltatime,Vec2 MoveDir, bool DashButtonPressed,bool G
 		setStamina(1);
 		StaminaTimer.reset();
 	}
-
 
 	//ステートごとの処理
 	switch (nowState)
@@ -127,6 +124,7 @@ void Player::update(double deltatime,Vec2 MoveDir, bool DashButtonPressed,bool G
 		break;
 	case State::Injured:
 		nowState = State::Invincible;
+		DefaultCooldownTimer.start();
 		break;
 	case State::Guard:
 		//被弾処理は別メソッドで(パリィ)
@@ -176,6 +174,48 @@ void Player::draw() const {
 
 }
 
+
+void Player::Damage(int value,DamagedState& hitState) {
+
+	//パリィ時間
+	const int GuardPaliyTime = 40;
+	//ガード時(ノットパリィのダメージ軽減率)
+	const double GuardDamageReductionRatio = 0.3;
+
+	switch (nowState)
+	{
+	case State::Default:
+		hitState = DamagedState::Default;
+		nowState = State::Injured;
+		break;
+	case State::DashNow:
+		hitState = DamagedState::nonDamaged;
+		value = 0;
+		break;
+	case State::Invincible:
+		hitState = DamagedState::nonDamaged;
+		value = 0;
+		break;
+	case State::Injured:
+		//基本次フレームのplayer.updateでステートがInvincibleに変わるので呼ばれないはず？
+		break;
+	case State::Guard:
+		if (GuardIntervalTimer.ms() < GuardPaliyTime) {
+			//パリィ成功時の処理
+			hitState = DamagedState::JustGuard;
+			GuardIntervalTimer.reset();
+			nowState = State::Default;
+		}
+		else {
+			hitState = DamagedState::Default;
+			value *= GuardDamageReductionRatio;
+		}
+		break;
+	default:
+		break;
+	}
+	setHP(getHP() - value);
+}
 
 int Player::getStamina() const { return Stamina; }
 void Player::setStamina(int a) { Stamina = a; }

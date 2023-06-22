@@ -9,7 +9,8 @@ private:
 	BulletManager *BulletController;
 	Character enemy;
 
-	Stopwatch BombTimer;
+	
+	VariableSpeedStopwatch BombTimer;
 public:
 	EnemyManager(BulletManager *a);
 

@@ -12,6 +12,14 @@ enum class State
 	Guard
 };
 
+enum class DamagedState {
+	Default,
+	nonDamaged,
+	JustGuard,
+	Dead,
+	NonHit
+};
+
 class Player: public Character{
 private:
 	int Stamina;
@@ -56,5 +64,6 @@ public:
 	//描画
 	void draw() const override;
 
+	void Damage(int value, DamagedState& hitState);
 
 };
